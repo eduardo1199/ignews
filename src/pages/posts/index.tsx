@@ -1,7 +1,39 @@
+import { useAllPrismicDocumentsByType } from '@prismicio/react';
 import Head from 'next/head';
+import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 
+type Posts = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  updatedAt: string;
+}
+
 export default function Posts() {
+  const [posts, setPosts] = useState<Posts[] | undefined>([]);
+
+  const [document] = useAllPrismicDocumentsByType('publication');
+
+  useEffect(() => {
+    const serializePosts = document?.map(document => {
+      return {
+        slug: document.uid!,
+        title: document.data.title!,
+        excerpt: document.data.content.find(content => !!content.type)?.text ?? '',
+        updatedAt: new Date(document.last_publication_date).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        })
+      }
+    })
+
+    setPosts(serializePosts);
+  }, [document]);
+
+  console.log(document);
+
   return (
     <>
       <Head>
@@ -10,21 +42,15 @@ export default function Posts() {
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          <a href="#">
-            <time>12 março de abril</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>In this guide, you will learn how to create a Monorepo to manage multiple packages with a shared build, test, and release process.</p>
-          </a>
-          <a href="#">
-            <time>12 março de abril</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>In this guide, you will learn how to create a Monorepo to manage multiple packages with a shared build, test, and release process.</p>
-          </a>
-          <a href="#">
-            <time>12 março de abril</time>
-            <strong>Creating a Monorepo with Lerna & Yarn Workspaces</strong>
-            <p>In this guide, you will learn how to create a Monorepo to manage multiple packages with a shared build, test, and release process.</p>
-          </a>
+          {posts?.map(post => {
+            return (
+              <a href="#" key={post.slug}>
+                <time>{post.updatedAt}</time>
+                <strong>{post.title}</strong>
+                <p>{post.excerpt}</p>
+              </a>
+            )
+          })}
         </div>
       </main>
     </>
