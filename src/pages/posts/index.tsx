@@ -1,7 +1,9 @@
 import { useAllPrismicDocumentsByType } from '@prismicio/react';
 import Head from 'next/head';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
+import { RichText } from 'prismic-reactjs';
 
 type Posts = {
   slug: string;
@@ -20,20 +22,20 @@ export default function Posts() {
       return {
         slug: document.uid!,
         title: document.data.title!,
-        excerpt: document.data.content.find(content => !!content.type)?.text ?? '',
+        excerpt: document.data.content.find(content => content.type === 'paragraph')?.text ?? '',
         updatedAt: new Date(document.last_publication_date).toLocaleDateString('pt-BR', {
           day: '2-digit',
           month: 'long',
           year: 'numeric'
         })
       }
-    })
+    });
+
+    console.log(document);
 
     setPosts(serializePosts);
   }, [document]);
-
-  console.log(document);
-
+  
   return (
     <>
       <Head>
@@ -44,11 +46,13 @@ export default function Posts() {
         <div className={styles.posts}>
           {posts?.map(post => {
             return (
-              <a href="#" key={post.slug}>
-                <time>{post.updatedAt}</time>
-                <strong>{post.title}</strong>
-                <p>{post.excerpt}</p>
-              </a>
+              <Link href={`/posts/${post.slug}`}>
+                <a key={post.slug}>
+                  <time>{post.updatedAt}</time>
+                  <strong>{post.title}</strong>
+                  <p>{post.excerpt}</p>
+                </a>
+              </Link>
             )
           })}
         </div>
