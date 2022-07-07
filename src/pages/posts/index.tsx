@@ -1,9 +1,9 @@
 import { useAllPrismicDocumentsByType } from '@prismicio/react';
+import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
-import { RichText } from 'prismic-reactjs';
 
 type Posts = {
   slug: string;
@@ -13,6 +13,7 @@ type Posts = {
 }
 
 export default function Posts() {
+  const { status } = useSession();
   const [posts, setPosts] = useState<Posts[] | undefined>([]);
 
   const [document] = useAllPrismicDocumentsByType('publication');
@@ -31,8 +32,6 @@ export default function Posts() {
       }
     });
 
-    console.log(document);
-
     setPosts(serializePosts);
   }, [document]);
   
@@ -46,7 +45,7 @@ export default function Posts() {
         <div className={styles.posts}>
           {posts?.map(post => {
             return (
-              <Link href={`/posts/${post.slug}`}>
+              <Link href={status === 'unauthenticated' ? `/posts/preview/${post.slug}` : `/posts/${post.slug}`} key={post.slug}>
                 <a key={post.slug}>
                   <time>{post.updatedAt}</time>
                   <strong>{post.title}</strong>

@@ -12,12 +12,17 @@ interface SubscribeButtonProps {
 }
 
 export function SubscribeButton({ priceId }: SubscribeButtonProps) {
-  const { status} = useSession();
+  const { status, data } = useSession();
   const router = useRouter();
 
   const handleSubscribe = async () => {
     if (status !== "authenticated") {
       signIn("github");
+      return;
+    }
+
+    if(data.activeSubscription) {
+      router.push('/posts');
       return;
     }
 

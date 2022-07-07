@@ -1,5 +1,6 @@
 import { usePrismicDocumentByUID } from "@prismicio/react";
-import { useSession } from "next-auth/react";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { RichText } from 'prismic-reactjs';
@@ -14,7 +15,6 @@ type Post = {
 }
 
 export default function Post() {
-  const { data: session, status } = useSession();
   const { query } = useRouter();
 
   const slug = query.slug as string;
@@ -30,6 +30,14 @@ export default function Post() {
       month: 'long',
       year: 'numeric'
     })
+  }
+
+  if(!document) {
+    return (
+      <main className={styles.container}>
+        <h1>Carregando...</h1>
+      </main>
+    )
   }
 
   return(
@@ -51,3 +59,20 @@ export default function Post() {
   );
 };
 
+
+export const getServerSideProps: GetServerSideProps = async (req) => {
+  const session = await getSession(req);
+
+  if(!session?.activeSubscription) {
+    return {
+      redirect: {
+        destination: '/posts',
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}

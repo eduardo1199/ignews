@@ -18,7 +18,7 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    /* async session({ session }) {
+    async session({ session }) {
       try {
         const userActiveSubscription = await fauna.query(
           query.Get(
@@ -53,7 +53,7 @@ export default NextAuth({
           activeSubscription: null,
         }
       }
-      }, */
+    },
     async signIn({ user }) {
       const { email } = user;
       try {
