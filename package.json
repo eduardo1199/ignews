@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "next build",
     "preview": "vite preview",
     "slicemachine": "start-slicemachine"
   },
