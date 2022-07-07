@@ -23,7 +23,7 @@ export default function Posts() {
       return {
         slug: document.uid!,
         title: document.data.title!,
-        excerpt: document.data.content.find(content => content.type === 'paragraph')?.text ?? '',
+        excerpt: document.data.content.find((content: any) => content.type === 'paragraph')?.text ?? '',
         updatedAt: new Date(document.last_publication_date).toLocaleDateString('pt-BR', {
           day: '2-digit',
           month: 'long',
